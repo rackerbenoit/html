@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', function() {
         width: 50px;
         height: 50px;
         border-radius: 50%;
-        background-color: #2b20a3;
+        background-color: #bf5700; /* UT color */
         color: white;
         border: none;
         font-size: 24px;

@@ -12,7 +12,7 @@
     position: absolute;
     top: -40px;
     left: 0;
-    background: #2b20a3;
+    background: #bf5700; /* UT color */
     color: white;
     padding: 8px;
     z-index: 100;
@@ -123,7 +123,7 @@ a {
 
 .bar-1 {
     width: 25%;
-    background-color: #30398F;
+    background-color: #bf5700; /* UT color */
     height: 70%;
 }
 
@@ -135,7 +135,7 @@ a {
 
 .bar-3 {
     width: 25%;
-    background-color: #2b20a3;
+    background-color: #bf5700; /* UT color */
     height: 80%;
 }
 
@@ -319,7 +319,7 @@ a {
 }
 
 .resume {
-    background: #EF9D2F;
+    background: #bf5700; /* UT color */
 }
 
 .linkedin {
