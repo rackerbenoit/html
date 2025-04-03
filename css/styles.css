@@ -1,189 +1,424 @@
-/*===== RESET ===== */
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed,
-figure, figcaption, footer, header, hgroup,
-menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
-	margin: 0;
-	padding: 0;
-	border: 0;
-	font-size: 100%;
-	font: inherit;
-	vertical-align: baseline;
+/* ===== RESET & BASE STYLES ===== */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
-article, aside, details, figcaption, figure,
-footer, header, hgroup, menu, nav, section {
-	display: block;
+
+/* ===== ACCESSIBILITY ===== */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: #bf5700; /* UT color */
+    color: white;
+    padding: 8px;
+    z-index: 100;
+    transition: top 0.3s;
 }
+
+.skip-link:focus {
+    top: 0;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+html {
+    font-size: 62.5%; /* 10px = 1rem for easy calculations */
+    scroll-behavior: smooth;
+}
+
 body {
-	line-height: 1;
-}
-ol, ul {
-	list-style: none;
-}
-blockquote, q {
-	quotes: none;
-}
-blockquote:before, blockquote:after,
-q:before, q:after {
-	content: '';
-	content: none;
-}
-table {
-	border-collapse: collapse;
-	border-spacing: 0;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 300;
+    font-size: 1.6rem;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f8f9fa;
+    overflow-x: hidden;
 }
 
-/*===== GLOBAL ===== */
-body {
-	font-family: 'Raleway', sans-serif;
-	font-weight: 100;
-}
-#bg1 {
-	width: 100%;
-	background-image: url(data:image/png;base64,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);
-	background-color: DarkOrange;
-}
-#bg2 {
-	width: 100%;
-	height: 100%;
-	background-image: url("../img/Bridge.jpg");
-	background-size: cover;
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
 }
 
-div {
-	position: fixed;
+a {
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
 }
 
-/*===== BANNER BARS ===== */
-#wrapper {
-	height: 100%;
-	width: 100%;
+/* ===== UTILITY CLASSES ===== */
+.container {
+    width: 100%;
+    max-width: 120rem;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+/* ===== HERO SECTION ===== */
+.hero {
+    position: relative;
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #fff;
+}
+
+.hero-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("../img/Bridge.jpg");
+    background-size: cover;
+    background-position: center;
+    z-index: -2;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: -1;
+}
+
+.hero-bars {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    z-index: -1;
 }
 
 .bar {
-	position: relative;
-	float: left;
-	width: 7%;
-	vertical-align:top;
-	display:inline-block;
+    height: 100%;
+    opacity: 0.7;
+    transition: height 0.5s ease;
 }
 
-#bar1 {
-	background-color:#30398F;
+.bar-1 {
+    width: 25%;
+    background-color: #bf5700; /* UT color */
+    height: 70%;
 }
 
-#bar2 {
-	background-color:#1e1854;
-	height: 100%;
+.bar-2 {
+    width: 25%;
+    background-color: #1e1854;
+    height: 100%;
 }
 
-#bar3 {
-	background-color:#2b20a3;
+.bar-3 {
+    width: 25%;
+    background-color: #bf5700; /* UT color */
+    height: 80%;
 }
 
-#bar4 {
-	background-color:#2775d3;
+.bar-4 {
+    width: 25%;
+    background-color: #2775d3;
+    height: 40%;
 }
 
-/*===== SPLASH SCREEN ===== */
-#name {
-	text-align: center;
-	font-size: 100px;
-	width: 650px;
-	height: 100px;
-	margin-left: -325px;
-	margin-top: -50px;
-	top: 50%;
-	left: 50%;
+.hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 80rem;
+    padding: 2rem;
 }
 
-#menu {
-	width: 300px;
-	margin-left: -150px;
-	left: 50%;
-	bottom: 50px;
-	background: rgba(171,171,171,0.7);
+.name {
+    font-size: 6rem;
+    font-weight: 200;
+    margin-bottom: 1rem;
+    letter-spacing: 0.2rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
-	#menu > a {
-		font-size: 20px;
-		font-weight: 300;
-		display: inline-block;
-		display: -moz-inline-box;
-		*display: inline;
-		zoom: 1;
-		width: 100%;
-		text-align: center;
-		margin: 30px 0;
-		color: black;
-		text-decoration: none;
-	}
 
-/* ===== ABOUT ME ===== */
-#about {
-	background: #574e3a;
-	color:#ffffff;
-	width: 600px;
-	height: 220px;
-	left: 50%;
-	top: 50%;
-	margin-top: -100px;
-	margin-left: -300px;
+.tagline {
+    font-size: 2.4rem;
+    font-weight: 300;
+    margin-bottom: 3rem;
+    opacity: 0.9;
 }
-	#about img {
-		width: 200px;
-		height: 300px;
-		float: left;
-		position: relative;
-	}
-	#about p {
-		font-size: 20px;
-		line-height: 30px;
-		margin-bottom: 40px;
-		position: relative;
-		margin-left: 200px;
-		padding: 20px;
-		text-align: center;
-	}
 
-/* ===== CONTACT ===== */
-#contact {
-	width: 400px;
-	margin-left: -200px;
-	left: 50%;
-	bottom: 50px;
+.main-nav {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 4rem;
 }
-	#contact > a {
-		font-size: 40px;
-		display: inline-block;
-		display: -moz-inline-box;
-		*display: inline;
-		zoom: 1;
-		width: 24%;
-		text-align: center;
-		margin: 30px 0;
-		color: black;
-		text-decoration: none;
-		padding-top: 31px;
-		padding-bottom: 31px;
-	}
-	.github {
-		background: #446A8E;
-	}
-	.resume {
-		background: #EF9D2F;
-	}
-	.linkedin {
-		background: #439787;
-	}
-	.email {
-		background: #D82E2E;
-	}
+
+.nav-link {
+    font-size: 1.8rem;
+    font-weight: 400;
+    color: #fff;
+    padding: 1rem 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-3px);
+}
+
+/* ===== ABOUT SECTION ===== */
+.about-section {
+    padding: 10rem 0;
+    background-color: #fff;
+}
+
+.profile {
+    display: flex;
+    align-items: center;
+    gap: 4rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #574e3a;
+    color: #fff;
+}
+
+.profile-image {
+    width: 30%;
+    min-width: 25rem;
+    height: auto;
+    object-fit: cover;
+}
+
+.profile-content {
+    padding: 3rem;
+    flex: 1;
+}
+
+.profile-content h2 {
+    font-size: 3.2rem;
+    font-weight: 300;
+    margin-bottom: 2rem;
+    color: #fff;
+}
+
+.profile-content p {
+    font-size: 1.8rem;
+    line-height: 1.8;
+}
+
+/* ===== SKILLS SECTION ===== */
+.skills-container {
+    margin-top: 3rem;
+}
+
+.skills-container h3 {
+    font-size: 2.4rem;
+    font-weight: 300;
+    margin-bottom: 2rem;
+    color: #fff;
+}
+
+.skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+    gap: 2rem;
+}
+
+.skill-category h4 {
+    font-size: 1.8rem;
+    font-weight: 400;
+    margin-bottom: 1rem;
+    color: #fff;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding-bottom: 0.5rem;
+}
+
+.skill-list {
+    list-style-type: none;
+}
+
+.skill-list li {
+    font-size: 1.6rem;
+    margin-bottom: 0.8rem;
+    position: relative;
+    padding-left: 1.5rem;
+}
+
+.skill-list li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* ===== CONTACT SECTION ===== */
+.contact-section {
+    padding: 10rem 0;
+    background-color: #f8f9fa;
+    text-align: center;
+}
+
+.contact-section h2 {
+    font-size: 3.2rem;
+    font-weight: 300;
+    margin-bottom: 4rem;
+    color: #333;
+}
+
+.social-links {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.social-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 6rem;
+    height: 6rem;
+    font-size: 3rem;
+    color: #fff;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.social-link:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.github {
+    background: #446A8E;
+}
+
+.resume {
+    background: #bf5700; /* UT color */
+}
+
+.linkedin {
+    background: #439787;
+}
+
+.email {
+    background: #D82E2E;
+}
+
+/* ===== FOOTER ===== */
+footer {
+    background-color: #333;
+    color: #fff;
+    padding: 3rem 0;
+    text-align: center;
+}
+
+footer p {
+    font-size: 1.4rem;
+    opacity: 0.8;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hero-content, .profile, .social-links {
+    animation: fadeIn 1s ease-out;
+}
+
+/* ===== MEDIA QUERIES ===== */
+@media screen and (max-width: 768px) {
+    html {
+        font-size: 56.25%; /* 9px = 1rem */
+    }
+    
+    .name {
+        font-size: 4.5rem;
+    }
+    
+    .profile {
+        flex-direction: column;
+    }
+    
+    .profile-image {
+        width: 100%;
+        min-width: auto;
+        max-height: 40rem;
+        object-fit: cover;
+    }
+    
+    .skills-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .social-link {
+        width: 5rem;
+        height: 5rem;
+        font-size: 2.5rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    html {
+        font-size: 50%; /* 8px = 1rem */
+    }
+    
+    .name {
+        font-size: 3.6rem;
+    }
+    
+    .tagline {
+        font-size: 1.8rem;
+    }
+    
+    .nav-link {
+        padding: 0.8rem 1.6rem;
+    }
+    
+    .profile-content {
+        padding: 2rem;
+    }
+    
+    .social-links {
+        gap: 1rem;
+    }
+    
+    .social-link {
+        width: 4.5rem;
+        height: 4.5rem;
+        font-size: 2.2rem;
+    }
+}
