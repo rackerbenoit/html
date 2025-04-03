@@ -30,7 +30,8 @@
     <!-- Stylesheets -->
     <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@100;200;300;400;600&display=swap" rel="stylesheet">
     <link href="css/styles.css" rel="stylesheet">
-    <link href="css/font-awesome.min.css" rel="stylesheet">
+    <!-- Updated Font Awesome to latest version -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="img/favicon.png">
@@ -104,19 +105,19 @@
                 <h2>Connect With Me</h2>
                 <div class="social-links">
                     <a class="social-link github" href="https://github.com/rackerbenoit" target="_blank" aria-label="GitHub Profile">
-                        <i class="fa fa-github-square" aria-hidden="true"></i>
+                        <i class="fab fa-github-square" aria-hidden="true"></i>
                         <span class="sr-only">GitHub</span>
                     </a>
                     <a class="social-link resume" href="files/resume1.pdf" target="_blank" aria-label="Download Resume (PDF)">
-                        <i class="fa fa-file-text" aria-hidden="true"></i>
+                        <i class="fas fa-file-lines" aria-hidden="true"></i>
                         <span class="sr-only">Resume</span>
                     </a>
                     <a class="social-link linkedin" href="http://lnkd.in/GGgn7J" target="_blank" aria-label="LinkedIn Profile">
-                        <i class="fa fa-linkedin-square" aria-hidden="true"></i>
+                        <i class="fab fa-linkedin" aria-hidden="true"></i>
                         <span class="sr-only">LinkedIn</span>
                     </a>
                     <a class="social-link email" href="mailto:paul.benoit36@gmail.com" aria-label="Send Email">
-                        <i class="fa fa-envelope" aria-hidden="true"></i>
+                        <i class="fas fa-envelope" aria-hidden="true"></i>
                         <span class="sr-only">Email</span>
                     </a>
                 </div>
@@ -134,12 +135,13 @@
     <script src="js/page.js" defer></script>
 
     <!-- Modern Analytics (Google Analytics 4) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-48035110-2"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MEASUREMENT_ID"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
-        gtag('config', 'UA-48035110-2');
+        gtag('config', 'G-MEASUREMENT_ID');
+        // Note: Replace 'G-MEASUREMENT_ID' with your actual GA4 measurement ID
     </script>
 </body>
 </html>
