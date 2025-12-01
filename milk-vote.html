@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Weekly Milk Vote - Submit your milk order">
+    <title>Milk Vote | Paul Benoit</title>
+
+    <!-- Stylesheets -->
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@100;200;300;400;600&display=swap" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+    <link href="css/milk-vote.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <meta name="theme-color" content="#2b20a3">
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header class="hero milk-hero" id="home" role="banner">
+        <div class="hero-background" aria-hidden="true"></div>
+        <div class="hero-overlay" aria-hidden="true"></div>
+        <div class="hero-content">
+            <h1 class="name">🥛 Weekly Milk Vote 🐄</h1>
+            <p class="tagline">How many gallons do you need this week?</p>
+            <nav class="main-nav" role="navigation" aria-label="Main navigation">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="#vote-form" class="nav-link">Vote</a>
+            </nav>
+        </div>
+    </header>
+
+    <main id="main-content">
+        <!-- Vote Form Section -->
+        <section id="vote-form" class="vote-section">
+            <div class="container">
+                <div class="vote-container">
+                    <h2>🥛 Submit Your Milk Order 🥛</h2>
+                    <p class="vote-description">Enter your name and how many gallons of milk you'd like this week. Orders reset every Monday.</p>
+
+                    <!-- Countdown Timer -->
+                    <div id="countdown" class="countdown-timer">
+                        <h3>⏰ Submissions Close In ⏰</h3>
+                        <div class="countdown-display">
+                            <div class="countdown-item">
+                                <span class="countdown-value" id="days">0</span>
+                                <span class="countdown-label">Days</span>
+                            </div>
+                            <div class="countdown-separator">:</div>
+                            <div class="countdown-item">
+                                <span class="countdown-value" id="hours">00</span>
+                                <span class="countdown-label">Hours</span>
+                            </div>
+                            <div class="countdown-separator">:</div>
+                            <div class="countdown-item">
+                                <span class="countdown-value" id="minutes">00</span>
+                                <span class="countdown-label">Minutes</span>
+                            </div>
+                            <div class="countdown-separator">:</div>
+                            <div class="countdown-item">
+                                <span class="countdown-value" id="seconds">00</span>
+                                <span class="countdown-label">Seconds</span>
+                            </div>
+                        </div>
+                        <p class="deadline-info">Deadline: Friday at 12:00 PM CST</p>
+                    </div>
+
+                    <!-- Voting Closed Message -->
+                    <div id="votingClosed" class="voting-closed" style="display: none;">
+                        <i class="fas fa-lock"></i>
+                        <h3>Submissions Closed</h3>
+                        <p>The deadline for this week's orders was Friday at 12:00 PM CST.</p>
+                        <p>Check back on Monday to submit next week's order!</p>
+                    </div>
+
+                    <form id="milkVoteForm" class="milk-form">
+                        <div class="form-group">
+                            <label for="voterName">Your Name</label>
+                            <input
+                                type="text"
+                                id="voterName"
+                                name="voterName"
+                                placeholder="Enter your name"
+                                required
+                                autocomplete="name"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="gallons">Gallons Needed</label>
+                            <input
+                                type="number"
+                                id="gallons"
+                                name="gallons"
+                                placeholder="0"
+                                min="0"
+                                max="100"
+                                step="0.5"
+                                required
+                            >
+                        </div>
+
+                        <button type="submit" class="submit-btn">
+                            <i class="fas fa-check-circle" aria-hidden="true"></i>
+                            Submit Entry
+                        </button>
+                    </form>
+
+                    <div id="successMessage" class="success-message" style="display: none;">
+                        <i class="fas fa-check-circle"></i>
+                        <p>Thanks! Your milk order has been recorded.</p>
+                    </div>
+                </div>
+
+                <!-- Current Week's Votes -->
+                <div class="votes-display">
+                    <h3>🐄 This Week's Orders 🐄</h3>
+                    <p class="reset-info">
+                        <i class="fas fa-calendar-week"></i>
+                        Entries automatically reset every Monday
+                    </p>
+                    <div id="votesList" class="votes-list">
+                        <p class="no-votes">No entries yet this week.</p>
+                    </div>
+                    <div class="votes-summary">
+                        <p><strong>Total Gallons:</strong> <span id="totalGallons">0</span></p>
+                        <p><strong>Total Voters:</strong> <span id="totalVoters">0</span></p>
+                    </div>
+                    <button id="clearVotes" class="clear-btn">
+                        <i class="fas fa-trash" aria-hidden="true"></i>
+                        Clear All Entries (requires password)
+                    </button>
+                </div>
+
+                <!-- Weekly History -->
+                <div class="history-display">
+                    <h3>📊 Weekly History 📊</h3>
+                    <p class="history-description">Past 12 weeks of milk orders</p>
+                    <div id="historyList" class="history-list">
+                        <p class="no-history">No history yet. Check back after the first week!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer role="contentinfo">
+        <div class="container">
+            <p>&copy; <span id="current-year"></span> Paul Benoit. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/milk-vote.js" defer></script>
+    <script>
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>
