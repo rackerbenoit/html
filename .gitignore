@@ -1,0 +1,6 @@
+# Ignore data directory (votes, history, etc.)
+/data/
+
+# OS files
+.DS_Store
+Thumbs.db
