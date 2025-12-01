@@ -35,13 +35,17 @@ This is a responsive, modern personal portfolio website built with HTML, CSS, an
 
 ```
 ├── index.html              # Main HTML file
+├── milk-vote.html          # Weekly milk voting application
 ├── info.php                # PHP info file
+├── api.php                 # PHP backend API for milk vote app
 ├── css/
 │   ├── styles.css          # Main stylesheet
+│   ├── milk-vote.css       # Milk vote app styles
 │   ├── font-awesome.css    # Font Awesome styles
 │   └── font-awesome.min.css
 ├── js/
 │   ├── page.js             # Main JavaScript file
+│   ├── milk-vote.js        # Milk vote app logic
 │   ├── skrollr.min.js      # Skrollr library
 │   ├── skrollr.menu.min.js # Skrollr menu extension
 │   └── skrollr.ie.min.js   # IE support for Skrollr
@@ -49,6 +53,10 @@ This is a responsive, modern personal portfolio website built with HTML, CSS, an
 │   ├── Bridge.jpg          # Hero background image
 │   └── Paul.jpg            # Profile photo
 ├── fonts/                  # Font Awesome font files
+├── data/                   # JSON data storage (gitignored)
+│   ├── votes.json          # Current week's milk votes
+│   ├── history.json        # Weekly history (last 12 weeks)
+│   └── lastReset.json      # Last reset timestamp
 └── files/
     └── resume1.pdf         # Downloadable resume
 ```
@@ -77,6 +85,57 @@ The site is currently deployed on a Digital Ocean Droplet using a LAMP stack:
 2. Upload the files to your web server's document root (e.g., `/var/www/html/`)
 3. Configure Apache to serve the site (if using a custom domain)
 4. Set appropriate file permissions
+
+### PHP Configuration (for Milk Vote Application)
+
+The milk vote application requires PHP to be installed and configured on the server. Follow these steps:
+
+#### 1. Install PHP 7.0 and Required Modules
+
+```bash
+sudo apt update
+sudo apt install php7.0 php7.0-fpm php7.0-cli php7.0-json php7.0-mbstring -y
+```
+
+#### 2. Install Apache PHP Module
+
+```bash
+sudo apt install libapache2-mod-php7.0 -y
+```
+
+#### 3. Enable PHP Module in Apache
+
+```bash
+sudo a2enmod php7.0
+```
+
+#### 4. Restart Apache
+
+```bash
+sudo systemctl restart apache2
+```
+
+#### 5. Verify PHP Installation
+
+Create a test file to verify PHP is working:
+
+```bash
+echo "<?php phpinfo(); ?>" | sudo tee /var/www/html/info.php
+```
+
+Then visit `http://your-domain.com/info.php` in your browser. You should see the PHP info page.
+
+#### 6. Create Data Directory for JSON Storage
+
+The milk vote application stores data in JSON files. Create the data directory with proper permissions:
+
+```bash
+sudo mkdir -p /var/www/html/data
+sudo chmod 755 /var/www/html/data
+sudo chown www-data:www-data /var/www/html/data
+```
+
+**Note**: The `/data` directory is excluded from version control via `.gitignore` to prevent committing user data.
 
 ## Maintenance
 
