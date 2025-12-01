@@ -1,10 +1,8 @@
 // Milk Vote Application
 // Handles form submission, data storage, and display
 
-const STORAGE_KEY = 'milkVotes';
-const LAST_RESET_KEY = 'milkVoteLastReset';
-const HISTORY_KEY = 'milkVoteHistory';
-const ADMIN_PASSWORD = 'milk'; // Change this to your preferred password
+const API_URL = 'api.php'; // Update this to your server URL when deployed
+const ADMIN_PASSWORD = 'milk';
 
 // Deadline: Friday at noon CST (12:00 PM)
 
@@ -99,37 +97,173 @@ function updateCountdown() {
     document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
 }
 
-// History Management
-function loadHistory() {
-    const stored = localStorage.getItem(HISTORY_KEY);
-    return stored ? JSON.parse(stored) : [];
+// API Functions
+
+// Load votes from server
+async function loadVotes() {
+    try {
+        const response = await fetch(`${API_URL}?action=getVotes`);
+        const votes = await response.json();
+        return Array.isArray(votes) ? votes : [];
+    } catch (error) {
+        console.error('Error loading votes:', error);
+        return [];
+    }
 }
 
-function saveHistory(history) {
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+// Load history from server
+async function loadHistory() {
+    try {
+        const response = await fetch(`${API_URL}?action=getHistory`);
+        const history = await response.json();
+        return Array.isArray(history) ? history : [];
+    } catch (error) {
+        console.error('Error loading history:', error);
+        return [];
+    }
 }
 
-function addToHistory(weekStart, totalGallons, totalVoters) {
-    const history = loadHistory();
+// Load last reset date from server
+async function loadLastReset() {
+    try {
+        const response = await fetch(`${API_URL}?action=getLastReset`);
+        const data = await response.json();
+        return data.lastReset;
+    } catch (error) {
+        console.error('Error loading last reset:', error);
+        return null;
+    }
+}
 
-    // Add new week's data
-    history.push({
-        weekStart: weekStart,
-        totalGallons: totalGallons,
-        totalVoters: totalVoters,
-        timestamp: new Date().toISOString()
-    });
+// Add a new vote to server
+async function addVote(name, gallons) {
+    try {
+        const vote = {
+            name: name,
+            gallons: parseFloat(gallons),
+            timestamp: new Date().toISOString()
+        };
 
-    // Keep only last 12 weeks
-    if (history.length > 12) {
-        history.shift();
+        const response = await fetch(`${API_URL}?action=addVote`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(vote)
+        });
+
+        const result = await response.json();
+        return result.success;
+    } catch (error) {
+        console.error('Error adding vote:', error);
+        return false;
+    }
+}
+
+// Add history record to server
+async function addToHistory(weekStart, totalGallons, totalVoters) {
+    try {
+        const historyRecord = {
+            weekStart: weekStart,
+            totalGallons: totalGallons,
+            totalVoters: totalVoters,
+            timestamp: new Date().toISOString()
+        };
+
+        const response = await fetch(`${API_URL}?action=addHistory`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(historyRecord)
+        });
+
+        const result = await response.json();
+        return result.success;
+    } catch (error) {
+        console.error('Error adding history:', error);
+        return false;
+    }
+}
+
+// Set last reset date on server
+async function setLastReset(date) {
+    try {
+        const response = await fetch(`${API_URL}?action=setLastReset`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ lastReset: date })
+        });
+
+        const result = await response.json();
+        return result.success;
+    } catch (error) {
+        console.error('Error setting last reset:', error);
+        return false;
+    }
+}
+
+// Clear all votes on server
+async function clearVotesOnServer(password) {
+    try {
+        const response = await fetch(`${API_URL}?action=clearVotes`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ password: password })
+        });
+
+        if (response.status === 403) {
+            return { success: false, error: 'Invalid password' };
+        }
+
+        const result = await response.json();
+        return result;
+    } catch (error) {
+        console.error('Error clearing votes:', error);
+        return { success: false, error: 'Network error' };
+    }
+}
+
+// Display Functions
+
+// Display all votes
+async function displayVotes() {
+    const votes = await loadVotes();
+    const votesList = document.getElementById('votesList');
+
+    if (votes.length === 0) {
+        votesList.innerHTML = '<p class="no-votes">No entries yet this week.</p>';
+        return;
     }
 
-    saveHistory(history);
+    // Sort by name
+    votes.sort((a, b) => a.name.localeCompare(b.name));
+
+    votesList.innerHTML = votes.map(vote => `
+        <div class="vote-item">
+            <span class="voter-name">${escapeHtml(vote.name)}</span>
+            <span class="voter-gallons">${vote.gallons} ${vote.gallons === 1 ? 'gallon' : 'gallons'}</span>
+        </div>
+    `).join('');
 }
 
-function displayHistory() {
-    const history = loadHistory();
+// Update summary statistics
+async function updateSummary() {
+    const votes = await loadVotes();
+    const totalGallons = votes.reduce((sum, vote) => sum + vote.gallons, 0);
+    const totalVoters = votes.length;
+
+    document.getElementById('totalGallons').textContent = totalGallons.toFixed(1);
+    document.getElementById('totalVoters').textContent = totalVoters;
+}
+
+// Display history
+async function displayHistory() {
+    const history = await loadHistory();
     const historyList = document.getElementById('historyList');
 
     if (!historyList) return; // Element not found
@@ -161,8 +295,8 @@ function displayHistory() {
 }
 
 // Check if we need to reset votes (if it's a new Monday)
-function shouldResetVotes() {
-    const lastReset = localStorage.getItem(LAST_RESET_KEY);
+async function shouldResetVotes() {
+    const lastReset = await loadLastReset();
     const currentMonday = getMondayOfWeek(new Date());
 
     if (!lastReset) {
@@ -177,100 +311,35 @@ function shouldResetVotes() {
 }
 
 // Initialize the app
-function initApp() {
+async function initApp() {
     // Check if we need to reset for a new Monday
-    if (shouldResetVotes()) {
+    if (await shouldResetVotes()) {
         // Save current week's data to history before resetting
-        const votes = loadVotes();
+        const votes = await loadVotes();
         if (votes.length > 0) {
             const totalGallons = votes.reduce((sum, vote) => sum + vote.gallons, 0);
             const totalVoters = votes.length;
-            const lastReset = localStorage.getItem(LAST_RESET_KEY);
+            const lastReset = await loadLastReset();
             const weekStart = lastReset || new Date().toISOString();
-            addToHistory(weekStart, totalGallons, totalVoters);
+            await addToHistory(weekStart, totalGallons, totalVoters);
         }
 
         // Auto-reset votes (no confirmation needed for Monday reset)
-        localStorage.removeItem(STORAGE_KEY);
-        localStorage.setItem(LAST_RESET_KEY, new Date().toISOString());
+        await clearVotesOnServer('milk');
+        await setLastReset(new Date().toISOString());
     }
 
-    loadVotes();
-    displayVotes();
-    updateSummary();
-    displayHistory();
+    await displayVotes();
+    await updateSummary();
+    await displayHistory();
 
     // Start countdown timer
     updateCountdown();
     setInterval(updateCountdown, 1000); // Update every second
 }
 
-// Load votes from localStorage
-function loadVotes() {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? JSON.parse(stored) : [];
-}
-
-// Save votes to localStorage
-function saveVotes(votes) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(votes));
-}
-
-// Add a new vote
-function addVote(name, gallons) {
-    const votes = loadVotes();
-
-    // Check if voter already exists and update their vote
-    const existingIndex = votes.findIndex(v => v.name.toLowerCase() === name.toLowerCase());
-
-    const vote = {
-        name: name,
-        gallons: parseFloat(gallons),
-        timestamp: new Date().toISOString()
-    };
-
-    if (existingIndex !== -1) {
-        votes[existingIndex] = vote;
-    } else {
-        votes.push(vote);
-    }
-
-    saveVotes(votes);
-}
-
-// Display all votes
-function displayVotes() {
-    const votes = loadVotes();
-    const votesList = document.getElementById('votesList');
-
-    if (votes.length === 0) {
-        votesList.innerHTML = '<p class="no-votes">No entries yet this week.</p>';
-        return;
-    }
-
-    // Sort by name
-    votes.sort((a, b) => a.name.localeCompare(b.name));
-
-    votesList.innerHTML = votes.map(vote => `
-        <div class="vote-item">
-            <span class="voter-name">${escapeHtml(vote.name)}</span>
-            <span class="voter-gallons">${vote.gallons} ${vote.gallons === 1 ? 'gallon' : 'gallons'}</span>
-        </div>
-    `).join('');
-}
-
-// Update summary statistics
-function updateSummary() {
-    const votes = loadVotes();
-    const totalGallons = votes.reduce((sum, vote) => sum + vote.gallons, 0);
-    const totalVoters = votes.length;
-
-    document.getElementById('totalGallons').textContent = totalGallons.toFixed(1);
-    document.getElementById('totalVoters').textContent = totalVoters;
-}
-
 // Clear all votes (password protected)
-function clearAllVotes() {
+async function clearAllVotes() {
     const password = prompt('Enter admin password to clear all entries:');
 
     if (!password) {
@@ -284,21 +353,26 @@ function clearAllVotes() {
 
     if (confirm('Are you sure you want to clear all entries? This cannot be undone.')) {
         // Save current data to history before clearing
-        const votes = loadVotes();
+        const votes = await loadVotes();
         if (votes.length > 0) {
             const totalGallons = votes.reduce((sum, vote) => sum + vote.gallons, 0);
             const totalVoters = votes.length;
-            const lastReset = localStorage.getItem(LAST_RESET_KEY);
+            const lastReset = await loadLastReset();
             const weekStart = lastReset || new Date().toISOString();
-            addToHistory(weekStart, totalGallons, totalVoters);
+            await addToHistory(weekStart, totalGallons, totalVoters);
         }
 
-        localStorage.removeItem(STORAGE_KEY);
-        localStorage.setItem(LAST_RESET_KEY, new Date().toISOString());
-        displayVotes();
-        updateSummary();
-        displayHistory();
-        alert('All entries have been cleared successfully.');
+        const result = await clearVotesOnServer(password);
+
+        if (result.success) {
+            await setLastReset(new Date().toISOString());
+            await displayVotes();
+            await updateSummary();
+            await displayHistory();
+            alert('All entries have been cleared successfully.');
+        } else {
+            alert('Error clearing entries: ' + (result.error || 'Unknown error'));
+        }
     }
 }
 
@@ -320,7 +394,7 @@ function showSuccessMessage() {
 }
 
 // Handle form submission
-document.getElementById('milkVoteForm').addEventListener('submit', function(e) {
+document.getElementById('milkVoteForm').addEventListener('submit', async function(e) {
     e.preventDefault();
 
     // Check if voting is still open
@@ -340,14 +414,19 @@ document.getElementById('milkVoteForm').addEventListener('submit', function(e) {
         return;
     }
 
-    addVote(name, gallons);
-    displayVotes();
-    updateSummary();
-    showSuccessMessage();
+    const success = await addVote(name, gallons);
 
-    // Reset form
-    this.reset();
-    nameInput.focus();
+    if (success) {
+        await displayVotes();
+        await updateSummary();
+        showSuccessMessage();
+
+        // Reset form
+        this.reset();
+        nameInput.focus();
+    } else {
+        alert('Error submitting entry. Please try again.');
+    }
 });
 
 // Handle clear button
