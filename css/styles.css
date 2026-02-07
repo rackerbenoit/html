@@ -438,17 +438,15 @@ footer p {
 }
 
 .project-list {
-    list-style: none;
-    padding: 0;
+    list-style-type: none;
 }
 
 .project-list li {
-    font-size: 1.5rem;
-    line-height: 1.8;
-    color: #555;
-    padding: 1rem 0;
-    padding-left: 2rem;
+    font-size: 1.6rem;
+    margin-bottom: 0.8rem;
     position: relative;
+    padding-left: 1.5rem;
+    color: #555;
 }
 
 .project-list li::before {
@@ -456,8 +454,6 @@ footer p {
     position: absolute;
     left: 0;
     color: #2b20a3;
-    font-weight: bold;
-    font-size: 1.8rem;
 }
 
 /* ===== GITHUB ACTIVITY SECTION ===== */
